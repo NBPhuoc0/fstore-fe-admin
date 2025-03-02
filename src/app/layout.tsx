@@ -1,7 +1,23 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import React, { Suspense } from "react";
-import { RefineContext } from "./_refine_context";
+import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { ColorModeContextProvider } from "@contexts/color-mode";
+import { Refine } from "@refinedev/core";
+import { AppIcon } from "@components/app-icon";
+import {
+  AppstoreOutlined,
+  BankOutlined,
+  DatabaseOutlined,
+  ExperimentOutlined,
+  SelectOutlined,
+  TagsOutlined,
+} from "@ant-design/icons";
+import { useNotificationProvider } from "@refinedev/antd";
+import { authProviderClient } from "@providers/auth-provider/auth-provider.client";
+import { dataProviderRes } from "@providers/data-provider";
+import routerProvider from "@refinedev/nextjs-router";
 
 export const metadata: Metadata = {
   title: "Fstore",
@@ -24,7 +40,81 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Suspense>
-          <RefineContext defaultMode={defaultMode}>{children}</RefineContext>
+          {/* <RefineContext defaultMode={defaultMode}>{children}</RefineContext> */}
+          <RefineKbarProvider>
+            <AntdRegistry>
+              <ColorModeContextProvider defaultMode={defaultMode}>
+                <Refine
+                  routerProvider={routerProvider}
+                  dataProvider={dataProviderRes} //!
+                  notificationProvider={useNotificationProvider}
+                  authProvider={authProviderClient} //!
+                  resources={[
+                    {
+                      name: "products",
+                      list: "/products",
+                      create: "/products/create",
+                      meta: {
+                        canDelete: true,
+                        icon: <AppstoreOutlined />,
+                      },
+                    },
+                    {
+                      name: "products utils",
+                      meta: {
+                        icon: <DatabaseOutlined />,
+                      },
+                    },
+                    {
+                      name: "categories",
+                      list: "/categories",
+                      meta: {
+                        canDelete: true,
+                        icon: <TagsOutlined />,
+                        parent: "products utils",
+                      },
+                    },
+                    {
+                      name: "brands",
+                      list: "/brands",
+                      meta: {
+                        canDelete: true,
+                        icon: <BankOutlined />,
+                        parent: "products utils",
+                      },
+                    },
+                    {
+                      name: "colors",
+                      list: "/colors",
+                      meta: {
+                        canDelete: true,
+                        icon: <ExperimentOutlined />,
+                        parent: "products utils",
+                      },
+                    },
+                    {
+                      name: "sizes",
+                      list: "/sizes",
+                      meta: {
+                        canDelete: true,
+                        icon: <SelectOutlined />,
+                        parent: "products utils",
+                      },
+                    },
+                  ]}
+                  options={{
+                    syncWithLocation: true,
+                    warnWhenUnsavedChanges: true,
+                    useNewQueryKeys: true,
+                    title: { text: "Fstore Admin", icon: <AppIcon /> },
+                  }}
+                >
+                  {children}
+                  <RefineKbar />
+                </Refine>
+              </ColorModeContextProvider>
+            </AntdRegistry>
+          </RefineKbarProvider>
         </Suspense>
       </body>
     </html>

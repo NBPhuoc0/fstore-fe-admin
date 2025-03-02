@@ -1,0 +1,154 @@
+"use client";
+
+import { axiosInstance } from "@refinedev/nestjsx-crud";
+import Cookies from "js-cookie";
+import { AuthProvider, HttpError } from "@refinedev/core";
+
+export const authProviderClient: AuthProvider = {
+  login: async ({ email, password }) => {
+    // Suppose we actually send a request to the back end here.
+    const response = await fetch("http://localhost:8080/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const user = await response.json();
+
+    if (user) {
+      if (!user.data.user.user_metadata.isAdmin) {
+        return {
+          success: false,
+          error: {
+            name: "LoginError",
+            message: "You are not authorized to access this page",
+          },
+        };
+      }
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${user.data.access_token}`;
+
+      Cookies.set("refreshtoken", user.data.refresh_token, {
+        expires: 3, // 30 days
+      });
+      Cookies.set("user", JSON.stringify(user.data.user.user_metadata), {
+        expires: 3, // 30 days
+      });
+      return {
+        success: true,
+        redirectTo: "/",
+      };
+    }
+
+    // if (true) {
+    //   return {
+    //     success: true,
+    //     redirectTo: "/",
+    //   };
+    // }
+    return {
+      success: false,
+      error: {
+        name: "LoginError",
+        message: "Invalid username or password",
+      },
+    };
+  },
+  logout: async () => {
+    Cookies.remove("refreshtoken");
+    Cookies.remove("user");
+    return {
+      success: true,
+      redirectTo: "/login",
+    };
+  },
+  check: async () => {
+    const auth = JSON.parse(Cookies.get("user") || "null");
+
+    if (auth.isAdmin) {
+      return {
+        authenticated: true,
+      };
+    }
+
+    return {
+      authenticated: false,
+      logout: true,
+      redirectTo: "/login",
+      error: {
+        name: "Unauthorized",
+        message: "You are not authorized to access this page",
+      },
+    };
+  },
+  onError: async (error) => {
+    console.log("in auth provider client");
+    console.log("error", error);
+    if (error.statusCode === 401) {
+      console.log("in auth provider client 401");
+      const token = Cookies.get("refreshtoken");
+      if (!token) {
+        console.log("in auth provider client 401 no token");
+        return {
+          logout: true,
+          redirectTo: "/login",
+        };
+      }
+
+      const response = await fetch("http://localhost:8080/auth/refresh", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const user = await response.json();
+
+      if (user) {
+        axiosInstance.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${user.data.access_token}`;
+
+        Cookies.set("refreshtoken", user.data.refresh_token, {
+          expires: 3, // 30 days
+        });
+        Cookies.set("user", JSON.stringify(user.data.user.user_metadata), {
+          expires: 3, // 30 days
+        });
+        return {
+          success: true,
+        };
+      } else {
+        console.log("in auth provider client 401 no user");
+        return {
+          logout: true,
+          redirectTo: "/login",
+        };
+      }
+    }
+
+    return {
+      error,
+    };
+  },
+  // getPermissions: async () => {
+  //   const auth = Cookies.get("user");
+  //   if (auth) {
+  //     const parsedUser = JSON.parse(auth);
+  //     return parsedUser.roles;
+  //   }
+  //   return null;
+  // },
+  // getIdentity: async () => {
+  //   const auth = Cookies.get("user");
+  //   if (auth) {
+  //     const parsedUser = JSON.parse(auth);
+  //     return parsedUser;
+  //   }
+  //   return null;
+  // },
+};

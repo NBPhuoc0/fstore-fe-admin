@@ -1,40 +1,36 @@
 "use client";
 
-import { BrandCreateModal } from "@components/modal/brand/create";
-import { BrandEditModal } from "@components/modal/brand/edit";
-import { IBrand } from "@interfaces";
+import { useEffect, useState } from "react";
+import { SizeCreateModal } from "@components/modal/size/create";
+import { SizeEditModal } from "@components/modal/size/edit";
+import { ISize } from "@interfaces";
 import {
   DeleteButton,
   EditButton,
   List,
-  ShowButton,
   useModalForm,
   useTable,
 } from "@refinedev/antd";
 import { type BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
-import { useEffect, useState } from "react";
 
-export default function BrandList() {
+export default function SizeList() {
+  const { tableProps } = useTable({
+    syncWithLocation: true,
+  });
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const { tableProps } = useTable<IBrand>({
-    syncWithLocation: true,
-  });
-
   const {
     modalProps: createModalProps,
     formProps: createFormProps,
     show: createModalShow,
     formLoading: createFormLoading,
-  } = useModalForm<IBrand>({
+  } = useModalForm<ISize>({
     action: "create",
     syncWithLocation: true,
-    autoSubmitClose: false,
   });
 
   const {
@@ -42,7 +38,7 @@ export default function BrandList() {
     formProps: editFormProps,
     show: editModalShow,
     formLoading: editFormLoading,
-  } = useModalForm<IBrand>({ action: "edit", syncWithLocation: true });
+  } = useModalForm<ISize>({ action: "edit", syncWithLocation: true });
 
   return (
     <>
@@ -70,12 +66,12 @@ export default function BrandList() {
       </List>
       {isClient && (
         <>
-          <BrandCreateModal
+          <SizeCreateModal
             formProps={createFormProps}
             modalProps={createModalProps}
             loading={createFormLoading}
           />
-          <BrandEditModal
+          <SizeEditModal
             formProps={editFormProps}
             modalProps={editModalProps}
             loading={editFormLoading}

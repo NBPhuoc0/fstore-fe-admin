@@ -12,34 +12,38 @@ import {
 } from "@refinedev/antd";
 import { useMany, type BaseRecord } from "@refinedev/core";
 import { Form, Input, Modal, Select, Space, Table } from "antd";
+import { CategoryCreateModal } from "../../components/modal/category/create";
+import { CategoryEditModal } from "@components/modal/category/edit";
+import { useEffect, useState } from "react";
 
 export default function CategoryList() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const { tableProps } = useTable<ICategory>({
     syncWithLocation: true,
-  });
-
-  // const { data: categoryData, isLoading: categoryIsLoading } = useMany({
-  //   resource: "categories",
-  //   ids:
-  //     tableProps?.dataSource?.map((item) => item?.parent?.id).filter(Boolean) ??
-  //     [],
-  //   queryOptions: {
-  //     enabled: !!tableProps?.dataSource,
-  //   },
-  // });
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "categories",
-    optionLabel: "name",
-    optionValue: "id",
   });
 
   const {
     modalProps: createModalProps,
     formProps: createFormProps,
     show: createModalShow,
+    formLoading: createFormLoading,
   } = useModalForm<ICategory>({
     action: "create",
+    syncWithLocation: true,
+    autoSubmitClose: false,
   });
+
+  const {
+    modalProps: editModalProps,
+    formProps: editFormProps,
+    show: editModalShow,
+
+    formLoading: editFormLoading,
+  } = useModalForm<ICategory>({ action: "edit", syncWithLocation: true });
 
   return (
     <>
@@ -51,46 +55,39 @@ export default function CategoryList() {
           <Table.Column
             dataIndex={"parent"}
             title={"Parent"}
-            render={
-              (value) => value?.name
-              // categoryIsLoading ? (
-              //   <>Loading...</>
-              // ) : (
-              //   categoryData?.data?.find((item) => item.id === value?.id)?.name
-              // )
-            }
+            render={(value) => (value ? `${value.id} - ${value.name}` : "")}
           />
           <Table.Column
             title={"Actions"}
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-                <EditButton hideText size="small" recordItemId={record.id} />
-                <ShowButton hideText size="small" recordItemId={record.id} />
+                <EditButton
+                  hideText
+                  size="small"
+                  recordItemId={record.id}
+                  onClick={() => editModalShow(record.id)}
+                />
                 <DeleteButton hideText size="small" recordItemId={record.id} />
               </Space>
             )}
           />
         </Table>
       </List>
-      <Modal {...createModalProps} title="Create Category">
-        <Form {...createFormProps} layout="vertical">
-          <Form.Item
-            label={"Name"}
-            name={["name"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label={"Parent"} name={["parent"]}>
-            <Select {...categorySelectProps} />
-          </Form.Item>
-        </Form>
-      </Modal>
+      {isClient && (
+        <>
+          <CategoryCreateModal
+            formProps={createFormProps}
+            loading={createFormLoading}
+            modalProps={createModalProps}
+          />
+          <CategoryEditModal
+            formProps={editFormProps}
+            loading={editFormLoading}
+            modalProps={editModalProps}
+          />
+        </>
+      )}
     </>
   );
 }
