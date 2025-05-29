@@ -26,7 +26,8 @@ interface PostUniqueCheckResponse {
 }
 export default function ProductCreate() {
   const { formProps, saveButtonProps, onFinish } = useForm<IProduct>({
-    redirect: false,
+    redirect: "create",
+
     onMutationError(error, variables, context, isAutoSave) {
       console.error("error \n");
       console.error(error);
@@ -176,49 +177,49 @@ export default function ProductCreate() {
               required: true,
             },
           ]}
-          initialValue={350000}
+          initialValue={450000}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Category"
-          name={["category"]}
+          name={["categoryId"]}
           rules={[
             {
               required: true,
             },
           ]}
-          initialValue={4}
+          initialValue={14}
         >
           <Select {...categorySelectProps} />
         </Form.Item>
         <Form.Item
           label="Brand"
-          name="brand"
+          name="brandId"
           rules={[
             {
               required: true,
             },
           ]}
-          initialValue={2}
+          initialValue={1}
         >
           <Select {...brandSelectProps} />
         </Form.Item>
         <Form.Item
           label="Sizes"
-          name="sizes"
+          name="sizeIds"
           rules={[
             {
               required: true,
             },
           ]}
-          initialValue={[1, 2]}
+          initialValue={[1, 2, 3]}
         >
           <Select {...sizeSelectProps} mode="multiple" />
         </Form.Item>
         <Form.Item
           label="Colors"
-          name="colors"
+          name="colorIds"
           rules={[
             {
               required: true,

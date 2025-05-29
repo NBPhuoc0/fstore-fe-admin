@@ -7,18 +7,21 @@ import { AuthProvider, HttpError } from "@refinedev/core";
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
     // Suppose we actually send a request to the back end here.
-    const response = await fetch("http://localhost:8080/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await fetch(
+      "http://fstore-nbphuoc.ddns.net:8080/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
 
-    const user = await response.json();
+    const data = await response.json();
 
-    if (user) {
-      if (!user.data.user.user_metadata.isAdmin) {
+    if (data) {
+      if (!data.data.isAdmin) {
         return {
           success: false,
           error: {
@@ -29,12 +32,12 @@ export const authProviderClient: AuthProvider = {
       }
       axiosInstance.defaults.headers.common[
         "Authorization"
-      ] = `Bearer ${user.data.access_token}`;
+      ] = `Bearer ${data.data.accessToken}`;
 
-      Cookies.set("refreshtoken", user.data.refresh_token, {
+      Cookies.set("refreshtoken", data.data.refreshToken, {
         expires: 3, // 30 days
       });
-      Cookies.set("user", JSON.stringify(user.data.user.user_metadata), {
+      Cookies.set("user", JSON.stringify(data.data), {
         expires: 3, // 30 days
       });
       return {
@@ -68,7 +71,7 @@ export const authProviderClient: AuthProvider = {
   check: async () => {
     const auth = JSON.parse(Cookies.get("user") || "null");
 
-    if (auth.isAdmin) {
+    if (auth?.isAdmin) {
       return {
         authenticated: true,
       };
@@ -106,17 +109,17 @@ export const authProviderClient: AuthProvider = {
         body: JSON.stringify({ token }),
       });
 
-      const user = await response.json();
+      const data = await response.json();
 
-      if (user) {
+      if (data) {
         axiosInstance.defaults.headers.common[
           "Authorization"
-        ] = `Bearer ${user.data.access_token}`;
+        ] = `Bearer ${data.data.accessToken}`;
 
-        Cookies.set("refreshtoken", user.data.refresh_token, {
+        Cookies.set("refreshtoken", data.data.refreshToken, {
           expires: 3, // 30 days
         });
-        Cookies.set("user", JSON.stringify(user.data.user.user_metadata), {
+        Cookies.set("user", JSON.stringify(data.data), {
           expires: 3, // 30 days
         });
         return {

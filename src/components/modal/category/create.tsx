@@ -25,7 +25,7 @@ export const CategoryCreateModal: React.FC<CreateCategoryModalProps> = ({
         <Form {...formProps} layout="vertical">
           <Form.Item
             label={"Name"}
-            name={["nAame"]}
+            name={["name"]}
             rules={[
               {
                 required: true,

@@ -6,7 +6,9 @@ export const authProviderServer: Pick<AuthProvider, "check"> = {
     const cookieStore = cookies();
     const auth = cookieStore.get("user");
 
-    if (auth?.value) {
+    // Check if the user cookie exists
+    // and if it contains the isAdmin property set to true
+    if (auth && auth.value) {
       if (JSON.parse(auth.value).isAdmin) {
         return {
           authenticated: true,

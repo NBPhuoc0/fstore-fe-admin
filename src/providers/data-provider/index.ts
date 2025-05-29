@@ -5,11 +5,12 @@ import dataProviderNestjsxCrud, {
 } from "@refinedev/nestjsx-crud";
 
 // const API_URL = "https://api.nestjsx-crud.refine.dev";
-const API_URL_RES = "http://localhost:8080/admin";
+const API_URL_LOCAL = "http://localhost:8080/admin";
+const API_URL_SV = "http://fstore-nbphuoc.ddns.net:8080/admin";
 // const API_URL_AUTH = "http://localhost:8080/auth";
 
 export const dataProviderRes = dataProviderNestjsxCrud(
-  API_URL_RES,
+  API_URL_SV, // Use API_URL_LOCAL for local development
   axiosInstance
 );
 // export const dataProviderAuth = dataProviderNestjsxCrud(API_URL_AUTH);
