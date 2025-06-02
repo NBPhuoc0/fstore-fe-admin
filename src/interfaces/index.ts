@@ -62,3 +62,19 @@ export interface IPhoto {
   createdDate: Date;
   updatedDate: Date;
 }
+
+export interface IPromotion {
+  id: number;
+  name: string;
+  urlHandle: string;
+  status: boolean;
+  description: string;
+  type: "PERCENT" | "AMOUNT" | "FLAT";
+  maxDiscount: number;
+  value: number;
+  startDate: Date;
+  endDate: Date;
+  products?: IProduct[] | number[];
+  createdDate: Date;
+  updatedDate: Date;
+}

@@ -10,7 +10,6 @@ import {
 } from "@refinedev/antd";
 import { BaseRecord, useRefreshButton } from "@refinedev/core";
 import { Space, Table } from "antd";
-import { use } from "react";
 
 export default function ProductList() {
   const { tableProps, tableQuery } = useTable<IProduct>({

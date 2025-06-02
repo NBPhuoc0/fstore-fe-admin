@@ -101,6 +101,11 @@ export default function RootLayout({
                         parent: "products utils",
                       },
                     },
+                    {
+                      name: "promotions",
+                      list: "/promotions",
+                      create: "/promotions/create",
+                    },
                   ]}
                   options={{
                     syncWithLocation: true,

@@ -41,7 +41,6 @@ export default function CategoryList() {
     modalProps: editModalProps,
     formProps: editFormProps,
     show: editModalShow,
-
     formLoading: editFormLoading,
   } = useModalForm<ICategory>({ action: "edit", syncWithLocation: true });
 
