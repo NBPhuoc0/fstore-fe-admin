@@ -67,6 +67,7 @@ export default function OrdersPage() {
                 { label: "PROCESSING", value: "PROCESSING" },
                 { label: "DELIVERED", value: "DELIVERED" },
                 { label: "CANCELED", value: "CANCELLED" },
+
                 { label: "ALL", value: undefined },
               ]}
             />
@@ -145,7 +146,7 @@ export default function OrdersPage() {
                   recordItemId={record.id}
                   onClick={showProduct.bind(null, record as IOrder)}
                 />
-                <DeleteButton hideText size="small" recordItemId={record.id} />
+                {/* <DeleteButton hideText size="small" recordItemId={record.id} /> */}
               </Space>
             )}
           />

@@ -7,16 +7,13 @@ import { AuthProvider, HttpError } from "@refinedev/core";
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
     // Suppose we actually send a request to the back end here.
-    const response = await fetch(
-      "http://fstore-nbphuoc.ddns.net:8080/auth/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      }
-    );
+    const response = await fetch("https://nbphuoc.xyz/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
     const data = await response.json();
 
@@ -101,7 +98,7 @@ export const authProviderClient: AuthProvider = {
         };
       }
 
-      const response = await fetch("http://localhost:8080/auth/refresh", {
+      const response = await fetch("https://nbphuoc.xyz/auth/refresh", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,10 +8,12 @@ import { Refine } from "@refinedev/core";
 import { AppIcon } from "@components/app-icon";
 import {
   AppstoreOutlined,
+  AreaChartOutlined,
   BankOutlined,
   ContainerOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
+  QrcodeOutlined,
   SelectOutlined,
   SketchOutlined,
   TagsOutlined,
@@ -59,6 +61,14 @@ export default function RootLayout({
                       meta: {
                         canDelete: true,
                         icon: <AppstoreOutlined />,
+                      },
+                    },
+                    {
+                      name: "inventory",
+                      list: "/inventory",
+                      meta: {
+                        canDelete: true,
+                        icon: <QrcodeOutlined />,
                       },
                     },
                     {
@@ -124,7 +134,7 @@ export default function RootLayout({
                       list: "/dashboard",
                       meta: {
                         canDelete: true,
-                        icon: <AppstoreOutlined />,
+                        icon: <AreaChartOutlined />,
                       },
                     },
                   ]}

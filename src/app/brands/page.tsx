@@ -62,7 +62,7 @@ export default function BrandList() {
                   onClick={() => editModalShow(record.id)}
                 />
                 {/* <ShowButton hideText size="small" recordItemId={record.id} /> */}
-                <DeleteButton hideText size="small" recordItemId={record.id} />
+                {/* <DeleteButton hideText size="small" recordItemId={record.id} /> */}
               </Space>
             )}
           />

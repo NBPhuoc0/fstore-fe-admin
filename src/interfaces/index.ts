@@ -46,11 +46,18 @@ export interface IProduct {
 export interface IVariant {
   id: number;
   code: string;
-  inventoryQuantity: number;
-  instock: boolean;
+  inventory: IInventory;
   color: IColor | number;
   size: ISize | number;
   product?: IProduct | number;
+}
+
+export interface IInventory {
+  id: number;
+  variantId: number;
+  stockQuantity: number;
+  createdDate: Date;
+  updatedDate: Date;
 }
 
 export interface IPhoto {

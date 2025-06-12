@@ -105,7 +105,7 @@ export default function PromotionList() {
                   recordItemId={record.id}
                   onClick={() => editModalShow(record.id)}
                 />
-                <DeleteButton hideText size="small" recordItemId={record.id} />
+                {/* <DeleteButton hideText size="small" recordItemId={record.id} /> */}
               </Space>
             )}
           />
