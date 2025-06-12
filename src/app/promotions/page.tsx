@@ -39,11 +39,23 @@ export default function PromotionList() {
   });
 
   const {
+    close,
     modalProps: editModalProps,
     formProps: editFormProps,
     show: editModalShow,
     formLoading: editFormLoading,
-  } = useModalForm<IPromotion>({ action: "create", syncWithLocation: true });
+  } = useModalForm<IPromotion>({
+    action: "edit",
+    syncWithLocation: true,
+    autoSubmitClose: false,
+    warnWhenUnsavedChanges: false,
+  });
+
+  editFormProps.onFinish = (values) => {
+    close(); // Close the modal after submission
+    console.log("Edit Promotion Form Submitted", values);
+    // You can add additional logic here, such as updating the promotion list
+  };
 
   const addProductButton = (
     <Button
@@ -85,8 +97,14 @@ export default function PromotionList() {
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-                <Button icon={<CheckOutlined />} size="small" />
-                <Button icon={<CloseOutlined />} size="small" />
+                {/* <Button icon={<CheckOutlined />} size="small" /> */}
+                {/* <Button icon={<CloseOutlined />} size="small" /> */}
+                <EditButton
+                  hideText
+                  size="small"
+                  recordItemId={record.id}
+                  onClick={() => editModalShow(record.id)}
+                />
                 <DeleteButton hideText size="small" recordItemId={record.id} />
               </Space>
             )}

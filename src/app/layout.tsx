@@ -9,9 +9,11 @@ import { AppIcon } from "@components/app-icon";
 import {
   AppstoreOutlined,
   BankOutlined,
+  ContainerOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
   SelectOutlined,
+  SketchOutlined,
   TagsOutlined,
 } from "@ant-design/icons";
 import { useNotificationProvider } from "@refinedev/antd";
@@ -101,10 +103,29 @@ export default function RootLayout({
                         parent: "products utils",
                       },
                     },
+                    // {
+                    //   name: "promotions",
+                    //   list: "/promotions",
+                    //   meta: {
+                    //     canDelete: true,
+                    //     icon: <SketchOutlined />,
+                    //   },
+                    // },
                     {
-                      name: "promotions",
-                      list: "/promotions",
-                      create: "/promotions/create",
+                      name: "orders",
+                      list: "/orders",
+                      meta: {
+                        canDelete: true,
+                        icon: <ContainerOutlined />,
+                      },
+                    },
+                    {
+                      name: "dashboard",
+                      list: "/dashboard",
+                      meta: {
+                        canDelete: true,
+                        icon: <AppstoreOutlined />,
+                      },
                     },
                   ]}
                   options={{

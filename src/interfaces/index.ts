@@ -78,3 +78,15 @@ export interface IPromotion {
   createdDate: Date;
   updatedDate: Date;
 }
+
+export interface IOrder {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  total: number;
+  status: "PENDING" | "COMPLETED" | "CANCELED";
+  createdDate: Date;
+  updatedDate: Date;
+  // products?: IProduct[] | number[];
+}

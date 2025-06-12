@@ -1,7 +1,7 @@
 "use client";
 
 import { IProduct, IPromotion } from "@interfaces";
-import { useSelect } from "@refinedev/antd";
+import { TextField, useSelect } from "@refinedev/antd";
 import { Form, Input, Modal, ModalProps, Select, Spin } from "antd";
 
 interface AddProduct2PromotionModalProps {
@@ -19,44 +19,40 @@ export const AddProductToPromotionModal: React.FC<
     optionValue: "id",
   });
 
-  const { selectProps: PromotionSelectProps } = useSelect<IPromotion>({
-    resource: "promotions",
-    optionLabel: "name",
-    optionValue: "id",
-  });
-
   return (
-    <Modal
-      className="nbphuoc"
-      title=" Add Product to Promotion"
-      {...modalProps}
-    >
+    <Modal title=" Add Product to Promotion" {...modalProps}>
       <Spin spinning={loading}>
         <Form {...formProps} layout="vertical">
-          <Form.Item
-            label={"Promotion"}
-            name={["id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Select {...PromotionSelectProps} />
+          <Form.Item label={"Promotion"} name={["name"]}>
+            <Input />
           </Form.Item>
-        </Form>
 
-        <Form {...formProps} layout="vertical">
           <Form.Item
             label={"Product"}
-            name={["id"]}
+            name={["productIds"]}
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Select {...ProductSelectProps} />
+            <Select
+              {...ProductSelectProps}
+              mode="multiple"
+              placeholder="Select products"
+              showSearch
+              filterOption={(input, option) =>
+                ((option?.label as string) ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            >
+              {ProductSelectProps.options?.map((option) => (
+                <Select.Option value={option.value}>
+                  {option.value}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Spin>

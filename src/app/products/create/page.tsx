@@ -189,7 +189,7 @@ export default function ProductCreate() {
               required: true,
             },
           ]}
-          initialValue={14}
+          initialValue={10}
         >
           <Select {...categorySelectProps} />
         </Form.Item>
@@ -213,7 +213,7 @@ export default function ProductCreate() {
               required: true,
             },
           ]}
-          initialValue={[1, 2, 3]}
+          initialValue={[1, 2, 3, 4]}
         >
           <Select {...sizeSelectProps} mode="multiple" />
         </Form.Item>

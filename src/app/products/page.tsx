@@ -7,6 +7,7 @@ import {
   useTable,
   List,
   RefreshButton,
+  ImageField,
 } from "@refinedev/antd";
 import { BaseRecord, useRefreshButton } from "@refinedev/core";
 import { Space, Table } from "antd";
@@ -33,7 +34,17 @@ export default function ProductList() {
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="name" title={"Name"} />
-          <Table.Column dataIndex="" title={"image"} />
+          <Table.Column
+            dataIndex="photos"
+            title={"image"}
+            render={(_, record) => (
+              <>
+                <ImageField value={record.photos[0].url} width={150} />
+
+                <ImageField value={record.photos[1].url} width={150} />
+              </>
+            )}
+          />
           {/* <Table.Column dataIndex="urlHandle" title={"URL Handle"} /> */}
           {/* <Table.Column dataIndex="code" title={"Code"} /> */}
           {/* <Table.Column
@@ -41,11 +52,11 @@ export default function ProductList() {
             title={"Display"}
             render={(value) => (value ? "Yes" : "No")}
           /> */}
-          <Table.Column
+          {/* <Table.Column
             dataIndex="inventoryStatus"
             title={"Inventory Status"}
             render={(value) => (value ? "InStock" : "Out of Stock")}
-          />
+          /> */}
           {/* <Table.Column dataIndex="metaDesc" title={"Description"} /> */}
           <Table.Column dataIndex="originalPrice" title={"Original Price"} />
           {/* <Table.Column
