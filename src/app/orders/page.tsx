@@ -5,17 +5,18 @@ import {
   ClockCircleOutlined,
   MoneyCollectOutlined,
   WarningOutlined,
+  RetweetOutlined,
+  ReloadOutlined,
+  FileSearchOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 import { OrderShowModal } from "@components/modal/order/show";
 import { IOrder } from "@interfaces";
 import {
-  DeleteButton,
-  EditButton,
-  ShowButton,
   useTable,
   List,
   RefreshButton,
-  ImageField,
+  ShowButton,
   useModal,
 } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
@@ -26,26 +27,37 @@ export default function OrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(
     undefined
   );
-
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
   const { tableProps, tableQuery } = useTable<IOrder>({
     syncWithLocation: true,
   });
   const { show, close, modalProps } = useModal();
-  const [productData, setProductData] = useState<IOrder | null>(null);
-  const showProduct = (data: IOrder) => {
-    setProductData(data);
+  const [orderData, setOrderData] = useState<IOrder | null>(null);
+
+  const showOrder = (data: IOrder) => {
+    setOrderData(data);
     show();
   };
+
   const filteredData = useMemo(() => {
     if (!selectedStatus) return tableProps?.dataSource || [];
     return (tableProps?.dataSource || []).filter(
       (item) => item.status === selectedStatus
     );
   }, [tableProps.dataSource, selectedStatus]);
+
+  const orderStatusOptions = [
+    { label: "PENDING", value: "PENDING" },
+    { label: "PROCESSING", value: "PROCESSING" },
+    { label: "DELIVERED", value: "DELIVERED" },
+    { label: "COMPLETED", value: "COMPLETED" },
+    { label: "CANCELLED", value: "CANCELLED" },
+    { label: "RETURNED", value: "RETURNED" },
+    { label: "REFUNDED", value: "REFUNDED" },
+    { label: "WAITTING_REFUND", value: "WAITTING_REFUND" },
+  ];
+
   return (
     <>
       <List
@@ -59,17 +71,10 @@ export default function OrdersPage() {
             <Select
               allowClear
               placeholder="Filter by status"
-              style={{ width: 200 }}
+              style={{ width: 220 }}
               value={selectedStatus}
               onChange={(value) => setSelectedStatus(value || undefined)}
-              options={[
-                { label: "PENDING", value: "PENDING" },
-                { label: "PROCESSING", value: "PROCESSING" },
-                { label: "DELIVERED", value: "DELIVERED" },
-                { label: "CANCELED", value: "CANCELLED" },
-
-                { label: "ALL", value: undefined },
-              ]}
+              options={orderStatusOptions}
             />
           </>
         )}
@@ -77,21 +82,17 @@ export default function OrdersPage() {
         <Table {...tableProps} rowKey="id" dataSource={filteredData}>
           <Table.Column dataIndex="id" title={"ID"} />
           <Table.Column dataIndex="name" title={"Customer name"} />
-          <Table.Column dataIndex="email" title={"Customer email"} />
-          <Table.Column dataIndex="phone" title={"Customer phone"} />
+          <Table.Column dataIndex="email" title={"Email"} />
+          <Table.Column dataIndex="phone" title={"Phone"} />
           <Table.Column
             dataIndex="paymentMethod"
-            title={"Payment method"}
+            title={"Payment"}
             render={(val) => {
-              let icon;
-              let color = "DodgerBlue";
-              if (val === "COD") {
-                icon = <MoneyCollectOutlined />;
-                color = "DarkSeaGreen";
-              } else icon = <BankOutlined />;
-
+              const color = val === "COD" ? "DarkSeaGreen" : "DodgerBlue";
+              const icon =
+                val === "COD" ? <MoneyCollectOutlined /> : <BankOutlined />;
               return (
-                <span style={{ color: color }}>
+                <span style={{ color }}>
                   {icon} - {val}
                 </span>
               );
@@ -102,64 +103,48 @@ export default function OrdersPage() {
             dataIndex="status"
             title={"Status"}
             render={(value) => {
-              let icon;
-              if (value === "CANCELLED") {
-                icon = (
-                  <span style={{ color: "red" }}>
-                    <WarningOutlined /> - Canceled
-                  </span>
-                );
-              } else if (value === "PENDING") {
-                icon = (
-                  <span style={{ color: "red" }}>
-                    <WarningOutlined /> - Pending
-                  </span>
-                );
-              } else if (value === "DELIVERED") {
-                icon = (
-                  <span style={{ color: "green" }}>
-                    <CheckCircleOutlined /> - Delivered
-                  </span>
-                );
-              } else if (value === "PROCESSING") {
-                icon = (
-                  <span style={{ color: "orange" }}>
-                    <ClockCircleOutlined /> - Processing
-                  </span>
-                );
-              } else {
-                icon = <span>{value}</span>;
-              }
-              return icon;
+              const statusMap: any = {
+                PENDING: { icon: <WarningOutlined />, color: "red" },
+                PROCESSING: { icon: <ClockCircleOutlined />, color: "orange" },
+                DELIVERED: { icon: <CheckCircleOutlined />, color: "green" },
+                COMPLETED: { icon: <ReloadOutlined />, color: "green" },
+                CANCELLED: { icon: <WarningOutlined />, color: "gray" },
+                RETURNED: { icon: <RetweetOutlined />, color: "purple" },
+                REFUNDED: { icon: <DollarOutlined />, color: "blue" },
+                WAITTING_REFUND: {
+                  icon: <FileSearchOutlined />,
+                  color: "orangered",
+                },
+              };
+              const { icon, color } = statusMap[value] || {};
+              return (
+                <span style={{ color }}>
+                  {icon} - {value}
+                </span>
+              );
             }}
           />
           <Table.Column
             title={"Actions"}
-            dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>
-                {/* <EditButton hideText size="small" recordItemId={record.id} /> */}
-
                 <ShowButton
                   hideText
                   size="small"
-                  recordItemId={record.id}
-                  onClick={showProduct.bind(null, record as IOrder)}
+                  onClick={() => showOrder(record as IOrder)}
                 />
-                {/* <DeleteButton hideText size="small" recordItemId={record.id} /> */}
               </Space>
             )}
           />
         </Table>
       </List>
+
       {isClient && (
-        <>
-          <OrderShowModal
-            modalProps={modalProps}
-            data={productData}
-            refetch={() => tableQuery.refetch()}
-          />{" "}
-        </>
+        <OrderShowModal
+          modalProps={modalProps}
+          data={orderData}
+          refetch={() => tableQuery.refetch()}
+        />
       )}
     </>
   );

@@ -13,6 +13,7 @@ import {
   ContainerOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
+  MailOutlined,
   QrcodeOutlined,
   SelectOutlined,
   SketchOutlined,
@@ -135,6 +136,14 @@ export default function RootLayout({
                       meta: {
                         canDelete: true,
                         icon: <AreaChartOutlined />,
+                      },
+                    },
+                    {
+                      name: "tickets",
+                      list: "/tickets",
+                      meta: {
+                        canDelete: true,
+                        icon: <MailOutlined />,
                       },
                     },
                   ]}

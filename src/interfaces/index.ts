@@ -96,4 +96,41 @@ export interface IOrder {
   createdDate: Date;
   updatedDate: Date;
   // products?: IProduct[] | number[];
+  items?: IOrderItem[] | number[];
+}
+
+export interface IOrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  variantId: number;
+  quantity: number;
+  price: number;
+  createdDate: Date;
+  updatedDate: Date;
+}
+
+export interface ITicket {
+  id: string;
+  email: string;
+  orderId: number | null;
+  type: TicketType;
+  status: TicketStatus;
+  customerNote: string;
+  adminNote: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export enum TicketType {
+  RETURNED = "RETURNED",
+  EXCHANGE = "EXCHANGE",
+  COMPLAINT = "COMPLAINT",
+  OTHERS = "OTHERS",
+}
+
+export enum TicketStatus {
+  PENDING = "PENDING",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  REJECTED = "REJECTED",
 }
