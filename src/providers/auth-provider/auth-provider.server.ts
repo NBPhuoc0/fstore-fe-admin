@@ -21,8 +21,8 @@ export const authProviderServer: Pick<AuthProvider, "check"> = {
       logout: true,
       redirectTo: "/login",
       error: {
-        name: "Unauthorized",
-        message: "You are not authorized to access this page",
+        name: "Không có quyền truy cập",
+        message: "Bạn không có quyền truy cập trang này",
       },
     };
   },

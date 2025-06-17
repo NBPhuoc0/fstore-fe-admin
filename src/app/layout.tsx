@@ -23,6 +23,7 @@ import { useNotificationProvider } from "@refinedev/antd";
 import { authProviderClient } from "@providers/auth-provider/auth-provider.client";
 import { dataProviderRes } from "@providers/data-provider";
 import routerProvider from "@refinedev/nextjs-router";
+import { OrderNotificationClient } from "@components/notification/order-noti";
 
 export const metadata: Metadata = {
   title: "Fstore",
@@ -44,6 +45,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <OrderNotificationClient />
+
         <Suspense>
           {/* <RefineContext defaultMode={defaultMode}>{children}</RefineContext> */}
           <RefineKbarProvider>
@@ -114,14 +117,14 @@ export default function RootLayout({
                         parent: "products utils",
                       },
                     },
-                    // {
-                    //   name: "promotions",
-                    //   list: "/promotions",
-                    //   meta: {
-                    //     canDelete: true,
-                    //     icon: <SketchOutlined />,
-                    //   },
-                    // },
+                    {
+                      name: "vouchers",
+                      list: "/vouchers",
+                      meta: {
+                        canDelete: true,
+                        icon: <SketchOutlined />,
+                      },
+                    },
                     {
                       name: "orders",
                       list: "/orders",

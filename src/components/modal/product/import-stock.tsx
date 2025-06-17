@@ -4,14 +4,14 @@ import { Modal, Form, InputNumber, Input, message } from "antd";
 import { useApiUrl } from "@refinedev/core";
 import { useState } from "react";
 
-interface ImportStockModalProps {
+interface AdjustStockModalProps {
   open: boolean;
   onClose: () => void;
   variantId: number;
   onSuccess?: () => void;
 }
 
-export const ImportStockModal: React.FC<ImportStockModalProps> = ({
+export const AdjustStockModal: React.FC<AdjustStockModalProps> = ({
   open,
   onClose,
   variantId,
@@ -26,11 +26,15 @@ export const ImportStockModal: React.FC<ImportStockModalProps> = ({
       const values = await form.validateFields();
       setLoading(true);
 
-      await fetch(`${apiUrl}/inventory/import`, {
+      const res = await fetch(`${apiUrl}/inventory/adjust`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ variantId, ...values }),
       });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Đã xảy ra lỗi khi xử lý yêu cầu");
+      }
 
       message.success("Nhập kho thành công");
       onClose();
@@ -46,7 +50,7 @@ export const ImportStockModal: React.FC<ImportStockModalProps> = ({
   return (
     <Modal
       open={open}
-      title="Import Stock"
+      title="Adjust Stock"
       onCancel={onClose}
       onOk={handleSubmit}
       confirmLoading={loading}
@@ -58,10 +62,6 @@ export const ImportStockModal: React.FC<ImportStockModalProps> = ({
           rules={[{ required: true, message: "Please enter quantity" }]}
         >
           <InputNumber min={1} style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item label="Price" name="price">
-          <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item label="Note" name="note">

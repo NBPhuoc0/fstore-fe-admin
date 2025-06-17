@@ -1,229 +1,168 @@
 "use client";
+
+import { OrderActions } from "@components/action/order-action";
+import { formatVND } from "@components/helper";
 import {
   Modal,
   ModalProps,
-  Typography,
-  Divider,
   Descriptions,
-  message,
-  Button,
+  Divider,
+  Typography,
   Tag,
+  Table,
+  Image,
   Space,
 } from "antd";
-import { useApiUrl } from "@refinedev/core";
-import { useState } from "react";
 
-interface ShowOrderModalProps {
+interface OrderDetailModalProps {
   modalProps: ModalProps;
   data: any;
-  refetch?: () => void;
+  onRefetch?: () => void;
 }
 
-export const OrderShowModal: React.FC<ShowOrderModalProps> = ({
+export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   modalProps,
   data,
-  refetch,
+  onRefetch,
 }) => {
+  if (!data) return null;
+
   const {
     id,
+    status,
     name,
     email,
-    phone,
     address,
+    phone,
     paymentMethod,
-    status,
-    subTotal,
+    paymentRef,
+    shippingRef,
     shippingFee,
+    subTotal,
     discount,
     total,
-    shippingRef,
+    createdAt,
     orderItems = [],
-  } = data || {};
-  const apiUrl = useApiUrl();
-  const [loading, setLoading] = useState(false);
-
-  const handleAction = async (action: string) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${apiUrl}/orders/${id}/${action}`, {
-        method: "POST",
-      });
-      if (!res.ok) throw new Error(`${action} failed`);
-      message.success(`${action} success!`);
-      refetch?.();
-      modalProps.onCancel;
-    } catch (err) {
-      console.error(err);
-      message.error(`${action} failed!`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderFooterButtons = () => {
-    const buttons: JSX.Element[] = [];
-
-    if (status === "PROCESSING") {
-      buttons.push(
-        <Button
-          key="confirm-delivered"
-          type="primary"
-          loading={loading}
-          onClick={() => handleAction("delivered")}
-        >
-          Xác nhận giao hàng
-        </Button>
-      );
-
-      buttons.push(
-        <Button
-          key="cancel"
-          danger
-          loading={loading}
-          onClick={() => handleAction("cancel")}
-        >
-          Huỷ đơn
-        </Button>
-      );
-    }
-
-    if (status === "DELIVERED") {
-      buttons.push(
-        <Button
-          key="track"
-          type="primary"
-          onClick={() =>
-            window.open(
-              `https://tracking.ghn.dev/?order_code=${shippingRef}`,
-              "_blank"
-            )
-          }
-        >
-          Xem trạng thái vận chuyển
-        </Button>
-      );
-    }
-
-    if (status === "COMPLETED") {
-      buttons.push(
-        <Button
-          key="return"
-          type="primary"
-          loading={loading}
-          onClick={() => handleAction("return")}
-        >
-          Trả hàng
-        </Button>
-      );
-    }
-
-    if (status === "WAITTING_REFUND") {
-      buttons.push(
-        <Button
-          key="refund"
-          type="primary"
-          danger
-          loading={loading}
-          onClick={() => handleAction("refund")}
-        >
-          Xác nhận hoàn tiền
-        </Button>
-      );
-    }
-
-    return buttons;
-  };
-
-  const statusColorMap: Record<string, string> = {
-    PENDING: "red",
-    PROCESSING: "orange",
-    DELIVERED: "green",
-    COMPLETED: "blue",
-    CANCELLED: "gray",
-    RETURNED: "purple",
-    REFUNDED: "cyan",
-    WAITTING_REFUND: "volcano",
-  };
+  } = data;
 
   return (
-    <Modal
-      title="Chi tiết đơn hàng"
-      {...modalProps}
-      width={850}
-      footer={renderFooterButtons()}
-    >
-      <Descriptions
-        bordered
-        column={2}
-        size="middle"
-        style={{ marginBottom: 24 }}
-      >
-        <Descriptions.Item label="Mã đơn">{id}</Descriptions.Item>
-        <Descriptions.Item label="Trạng thái">
-          <Tag color={statusColorMap[status] || "default"}>{status}</Tag>
+    <Modal {...modalProps} title={`Order #${id}`} width={900}>
+      <Descriptions bordered column={2} size="small">
+        <Descriptions.Item label="Order ID">{id}</Descriptions.Item>
+        <Descriptions.Item label="Status">
+          <Tag color={getStatusColor(status)}>{status}</Tag>
         </Descriptions.Item>
-        <Descriptions.Item label="Khách hàng">{name}</Descriptions.Item>
+        <Descriptions.Item label="Customer Name">{name}</Descriptions.Item>
         <Descriptions.Item label="Email">{email}</Descriptions.Item>
-        <Descriptions.Item label="SĐT">{phone}</Descriptions.Item>
-        <Descriptions.Item label="Địa chỉ" span={2}>
+        <Descriptions.Item label="Phone">{phone}</Descriptions.Item>
+        <Descriptions.Item label="Address" span={2}>
           {address}
         </Descriptions.Item>
-        <Descriptions.Item label="Phương thức thanh toán">
+        <Descriptions.Item label="Payment Method">
           {paymentMethod}
         </Descriptions.Item>
-        <Descriptions.Item label="Tổng tạm tính">
-          {subTotal?.toLocaleString("vi-VN")} ₫
+        <Descriptions.Item label="Payment Ref">
+          {paymentRef ?? "-"}
         </Descriptions.Item>
-        <Descriptions.Item label="Phí vận chuyển">
-          {shippingFee?.toLocaleString("vi-VN")} ₫
+        <Descriptions.Item label="Shipping Ref">
+          {shippingRef ?? "-"}
         </Descriptions.Item>
-        <Descriptions.Item label="Giảm giá">
-          {discount?.toLocaleString("vi-VN")} ₫
+        <Descriptions.Item label="Subtotal">
+          {formatVND(subTotal)}
         </Descriptions.Item>
-        <Descriptions.Item label="Tổng cộng">
-          <Typography.Text strong style={{ fontSize: 16, color: "#d4380d" }}>
-            {total?.toLocaleString("vi-VN")} ₫
-          </Typography.Text>
+        <Descriptions.Item label="Shipping Fee">
+          {formatVND(shippingFee)}
+        </Descriptions.Item>
+        <Descriptions.Item label="Discount">
+          {formatVND(discount)}
+        </Descriptions.Item>
+        <Descriptions.Item label="Total">{formatVND(total)}</Descriptions.Item>
+        <Descriptions.Item label="Created At" span={2}>
+          {new Date(createdAt).toLocaleString()}
         </Descriptions.Item>
       </Descriptions>
 
-      <Divider orientation="left">Danh sách sản phẩm</Divider>
+      <Divider orientation="left">Order Items</Divider>
 
-      <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-        {orderItems.length > 0 ? (
-          orderItems.map((item: any, index: number) => (
-            <div
-              key={item.id}
-              style={{
-                padding: "16px",
-                border: "1px solid #f0f0f0",
-                borderRadius: 10,
-                background: "#fafafa",
-              }}
-            >
-              <Space
-                direction="vertical"
-                size="small"
-                style={{ width: "100%" }}
-              >
-                <Typography.Text strong>
-                  #{index + 1} - Product ID: {item.productId}, Variant ID:{" "}
-                  {item.variantId}
-                </Typography.Text>
-                <Typography.Text>Số lượng: {item.quantity}</Typography.Text>
-                <Typography.Text>
-                  Đơn giá: {item.product.originalPrice?.toLocaleString("vi-VN")}{" "}
-                  ₫
-                </Typography.Text>
+      <Table
+        dataSource={orderItems}
+        rowKey={(record) => record.id}
+        pagination={false}
+        bordered
+        size="small"
+      >
+        <Table.Column
+          title="Product"
+          render={(_, record: any) => {
+            const product = record.product;
+            const photoUrl = product?.photos?.[0]?.url;
+
+            return (
+              <Space>
+                <Image
+                  src={photoUrl}
+                  width={60}
+                  height={60}
+                  style={{ objectFit: "cover" }}
+                />
+                <div>
+                  <Typography.Text strong>{product.name}</Typography.Text>
+                  <br />
+                  <Typography.Text type="secondary">
+                    Code: {product.code}
+                  </Typography.Text>
+                </div>
               </Space>
-            </div>
-          ))
-        ) : (
-          <Typography.Text type="secondary">
-            Không có sản phẩm nào.
-          </Typography.Text>
-        )}
-      </Space>
+            );
+          }}
+        />
+        <Table.Column title="Quantity" dataIndex="quantity" align="center" />
+        <Table.Column
+          title="Original Price"
+          render={(_, record: any) => {
+            const price = record.product?.originalPrice;
+            return formatVND(price);
+          }}
+          align="right"
+        />
+        <Table.Column
+          title="Total"
+          render={(_, record: any) => {
+            const price = record.product?.originalPrice;
+            const qty = record.quantity;
+            return formatVND(price * qty);
+          }}
+          align="right"
+        />
+      </Table>
+      <Divider orientation="left">State Actions</Divider>
+
+      <OrderActions
+        id={id}
+        status={status}
+        onSuccess={onRefetch}
+        orderItems={orderItems}
+      />
     </Modal>
   );
+};
+
+// ✅ Helper function đổi màu status
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "CANCELLED":
+      return "red";
+    case "COMPLETED":
+      return "green";
+    case "PENDING":
+      return "orange";
+    case "DELIVERING":
+      return "blue";
+    case "RETURN_PROCESSING":
+      return "purple";
+    case "WAITING_REFUND":
+      return "magenta";
+    default:
+      return "default";
+  }
 };

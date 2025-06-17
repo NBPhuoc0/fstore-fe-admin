@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, Form, Upload, Button, message, Input } from "antd";
+import { Modal, Form, Upload, Button, message, Input, InputNumber } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useApiUrl } from "@refinedev/core";
 import { useState } from "react";
@@ -23,10 +23,12 @@ export const InventoryBulkUploadModal: React.FC<
     try {
       const values = await form.validateFields();
       const formData = new FormData();
+
       formData.append("file", values.file[0].originFileObj);
-      if (values.note) {
-        formData.append("note", values.note);
-      }
+      formData.append("supplierName", values.supplierName || "");
+      formData.append("note", values.note || "");
+      formData.append("incidentalCosts", values.incidentalCosts || "0");
+      formData.append("createdBy", values.createdBy || "");
 
       setLoading(true);
       const endpoint =
@@ -34,25 +36,24 @@ export const InventoryBulkUploadModal: React.FC<
           ? `${apiUrl}/inventory/import/bulk`
           : `${apiUrl}/inventory/adjust/bulk`;
 
-      await fetch(endpoint, {
+      const res = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
-
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Đã xảy ra lỗi khi xử lý yêu cầu");
+      }
       message.success(`${type === "import" ? "Import" : "Adjust"} thành công`);
       onClose();
       onSuccess?.();
+      form.resetFields();
     } catch (err) {
       console.error(err);
       message.error(`${type === "import" ? "Import" : "Adjust"} thất bại`);
     } finally {
       setLoading(false);
     }
-  };
-
-  const test = async () => {
-    const values = await form.validateFields();
-    console.log(JSON.stringify(values.file[0].name));
   };
 
   return (
@@ -76,8 +77,20 @@ export const InventoryBulkUploadModal: React.FC<
           </Upload>
         </Form.Item>
 
-        <Form.Item name="note" label="Note (optional)">
-          <Input.TextArea rows={3} />
+        <Form.Item name="supplierName" label="Supplier Name" required>
+          <Input placeholder="Nhập nhà cung cấp" />
+        </Form.Item>
+
+        <Form.Item name="note" label="Note">
+          <Input.TextArea rows={2} placeholder="Ghi chú thêm (nếu có)" />
+        </Form.Item>
+
+        <Form.Item name="incidentalCosts" label="Incidental Costs" required>
+          <InputNumber style={{ width: "100%" }} min={0} />
+        </Form.Item>
+
+        <Form.Item name="createdBy" label="Created By" required>
+          <Input placeholder="Người tạo phiếu" />
         </Form.Item>
       </Form>
     </Modal>

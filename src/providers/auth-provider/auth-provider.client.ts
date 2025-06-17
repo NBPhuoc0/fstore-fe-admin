@@ -7,7 +7,7 @@ import { AuthProvider, HttpError } from "@refinedev/core";
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
     // Suppose we actually send a request to the back end here.
-    const response = await fetch("https://nbphuoc.xyz/auth/login", {
+    const response = await fetch("https://api.nbphuoc.xyz/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,8 +22,8 @@ export const authProviderClient: AuthProvider = {
         return {
           success: false,
           error: {
-            name: "LoginError",
-            message: "You are not authorized to access this page",
+            name: "Lỗi đăng nhập",
+            message: "Bạn không có quyền truy cập trang này",
           },
         };
       }
@@ -52,8 +52,8 @@ export const authProviderClient: AuthProvider = {
     return {
       success: false,
       error: {
-        name: "LoginError",
-        message: "Invalid username or password",
+        name: "Lỗi đăng nhập",
+        message: "Tên đăng nhập hoặc mật khẩu không đúng",
       },
     };
   },
@@ -79,8 +79,8 @@ export const authProviderClient: AuthProvider = {
       logout: true,
       redirectTo: "/login",
       error: {
-        name: "Unauthorized",
-        message: "You are not authorized to access this page",
+        name: "Không có quyền truy cập",
+        message: "Bạn không có quyền truy cập trang này",
       },
     };
   },
@@ -98,7 +98,7 @@ export const authProviderClient: AuthProvider = {
         };
       }
 
-      const response = await fetch("https://nbphuoc.xyz/auth/refresh", {
+      const response = await fetch("https://api.nbphuoc.xyz/auth/refresh", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

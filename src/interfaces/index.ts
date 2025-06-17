@@ -70,18 +70,15 @@ export interface IPhoto {
   updatedDate: Date;
 }
 
-export interface IPromotion {
+export interface IVoucher {
   id: number;
   name: string;
-  urlHandle: string;
   status: boolean;
   description: string;
-  type: "PERCENT" | "AMOUNT" | "FLAT";
+  type: "PERCENT" | "AMOUNT";
   maxDiscount: number;
   value: number;
-  startDate: Date;
-  endDate: Date;
-  products?: IProduct[] | number[];
+  image: string;
   createdDate: Date;
   updatedDate: Date;
 }
@@ -133,4 +130,16 @@ export enum TicketStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
   REJECTED = "REJECTED",
+}
+
+export enum OrderStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  DELIVERING = "DELIVERING",
+  CANCELLED = "CANCELLED",
+  COMPLETED = "COMPLETED",
+  RETURN_PROCESSING = "RETURN_PROCESSING",
+  RETURNED = "RETURNED",
+  EXCHANGED = "EXCHANGED",
+  WAITING_REFUND = "WAITING_REFUND",
 }

@@ -2,7 +2,13 @@
 
 import { TicketShowModal } from "@components/modal/ticket/show";
 import { ITicket, TicketStatus, TicketType } from "@interfaces";
-import { List, RefreshButton, useTable, ShowButton } from "@refinedev/antd";
+import {
+  List,
+  RefreshButton,
+  useTable,
+  ShowButton,
+  DeleteButton,
+} from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
 import { Table, Space, Tag } from "antd";
 import { useEffect, useState, useMemo } from "react";
@@ -44,36 +50,54 @@ export default function TicketList() {
         )}
       >
         <Table {...tableProps} rowKey="id">
-          <Table.Column dataIndex="id" title="ID" />
+          <Table.Column dataIndex="id" title="Mã" />
           <Table.Column dataIndex="email" title="Email" />
           <Table.Column
             dataIndex="orderId"
-            title="Order ID"
-            render={(val) => val ?? "No Order"}
+            title="Mã đơn hàng"
+            render={(val) => val ?? "Không có đơn"}
           />
           <Table.Column
             dataIndex="type"
-            title="Type"
+            title="Loại phiếu"
             render={(val: TicketType) => (
-              <Tag color={typeColorMap[val]}>{val}</Tag>
+              <Tag color={typeColorMap[val]}>
+                {val === "RETURNED"
+                  ? "Trả hàng"
+                  : val === "EXCHANGE"
+                  ? "Đổi hàng"
+                  : val === "COMPLAINT"
+                  ? "Khiếu nại"
+                  : "Khác"}
+              </Tag>
             )}
           />
           <Table.Column
             dataIndex="status"
-            title="Status"
+            title="Trạng thái"
             render={(val: TicketStatus) => (
-              <Tag color={statusColorMap[val]}>{val}</Tag>
+              <Tag color={statusColorMap[val]}>
+                {val === "PENDING"
+                  ? "Chờ xử lý"
+                  : val === "IN_PROGRESS"
+                  ? "Đang xử lý"
+                  : val === "COMPLETED"
+                  ? "Hoàn thành"
+                  : val === "REJECTED"
+                  ? "Từ chối"
+                  : val}
+              </Tag>
             )}
           />
-          <Table.Column dataIndex="customerNote" title="Customer Note" />
-          <Table.Column dataIndex="adminNote" title="Admin Note" />
+          <Table.Column dataIndex="customerNote" title="Ghi chú khách hàng" />
+          <Table.Column dataIndex="adminNote" title="Ghi chú quản trị" />
           <Table.Column
             dataIndex="createdAt"
-            title="Created At"
+            title="Ngày tạo"
             render={(val) => new Date(val).toLocaleString()}
           />
           <Table.Column
-            title="Actions"
+            title="Thao tác"
             render={(_, record: BaseRecord) => (
               <Space>
                 <ShowButton
@@ -84,6 +108,12 @@ export default function TicketList() {
                     setSelectedTicket(record as ITicket);
                     setModalOpen(true);
                   }}
+                />
+                <DeleteButton
+                  hideText
+                  size="small"
+                  recordItemId={record.id}
+                  resource="tickets"
                 />
               </Space>
             )}

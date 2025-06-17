@@ -55,14 +55,29 @@ export default function EcommerceDashboard() {
       const m = month.month() + 1; // vì month() bắt đầu từ 0
 
       const [revenueRes, categoryRes, productRes] = await Promise.all([
-        fetch(`${apiUrl}/dashboard/monthly-revenue?y=${y}&m=${m}`).then((res) =>
-          res.json()
+        fetch(`${apiUrl}/dashboard/monthly-revenue?y=${y}&m=${m}`).then(
+          (res) => {
+            if (!res.ok) {
+              throw new Error("Failed to fetch monthly revenue");
+            }
+            return res.json();
+          }
         ),
-        fetch(`${apiUrl}/dashboard/top-categories?y=${y}&m=${m}`).then((res) =>
-          res.json()
+        fetch(`${apiUrl}/dashboard/top-categories?y=${y}&m=${m}`).then(
+          (res) => {
+            if (!res.ok) {
+              throw new Error("Failed to fetch top categories");
+            }
+            return res.json();
+          }
         ),
         fetch(`${apiUrl}/dashboard/top-selling-products?y=${y}&m=${m}`).then(
-          (res) => res.json()
+          (res) => {
+            if (!res.ok) {
+              throw new Error("Failed to fetch top selling products");
+            }
+            return res.json();
+          }
         ),
       ]);
 

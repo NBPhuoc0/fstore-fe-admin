@@ -46,10 +46,10 @@ export default function ColorList() {
     <>
       <List createButtonProps={{ onClick: () => createModalShow() }}>
         <Table {...tableProps} rowKey="id">
-          <Table.Column dataIndex="id" title={"ID"} />
-          <Table.Column dataIndex="name" title={"Name"} />
+          <Table.Column dataIndex="id" title={"Mã"} />
+          <Table.Column dataIndex="name" title={"Tên màu sắc"} />
           <Table.Column
-            title={"Actions"}
+            title={"Thao tác"}
             dataIndex="actions"
             render={(_, record: BaseRecord) => (
               <Space>

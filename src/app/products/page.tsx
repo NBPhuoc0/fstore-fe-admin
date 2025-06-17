@@ -1,45 +1,67 @@
 "use client";
+
 import { ProductShowModal } from "@components/modal/product/show";
 import { IProduct } from "@interfaces";
 import {
-  DeleteButton,
-  EditButton,
   ShowButton,
-  useTable,
   List,
   RefreshButton,
   ImageField,
   useModal,
+  DeleteButton,
 } from "@refinedev/antd";
-import { BaseRecord, useRefreshButton } from "@refinedev/core";
-import { Input, Space, Table } from "antd";
+import { BaseRecord, useApiUrl, useCustom } from "@refinedev/core";
+import { Input, Space, Table, Spin, PaginationProps } from "antd";
 import { useEffect, useState, useMemo } from "react";
 
 export default function ProductList() {
+  const apiUrl = useApiUrl();
   const [isClient, setIsClient] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<
+    number | undefined
+  >(undefined);
+  const [searchText, setSearchText] = useState("");
+
+  // Thêm state pagination
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const { tableProps, tableQuery } = useTable<IProduct>({
-    syncWithLocation: true,
+
+  const { data, isLoading, refetch } = useCustom<{
+    data: IProduct[];
+    total: number;
+  }>({
+    url: `${apiUrl}/products`,
+    method: "get",
+    config: {
+      query: {
+        current: current.toString(),
+        pageSize: pageSize.toString(),
+      },
+    },
   });
-  const { show, close, modalProps } = useModal();
-  const [productData, setProductData] = useState<IProduct | null>(null);
-  const showProduct = (data: IProduct) => {
-    setProductData(data);
-    show();
-  };
-  const [searchText, setSearchText] = useState("");
 
   const filteredData = useMemo(() => {
-    if (!searchText) return tableProps.dataSource || [];
-    return (tableProps.dataSource || []).filter((item) =>
+    const list = data?.data?.data || [];
+    if (!searchText) return list;
+    return list.filter((item) =>
       item.name.toLowerCase().includes(searchText.toLowerCase())
     );
-  }, [tableProps.dataSource, searchText]);
+  }, [data?.data?.data, searchText]);
 
-  const useR = () => {
-    tableQuery.refetch();
+  const pagination: PaginationProps = {
+    current,
+    pageSize,
+    total: data?.data?.total || 0,
+    onChange: (page, size) => {
+      setCurrent(page);
+      setPageSize(size);
+    },
+    showSizeChanger: true,
+    pageSizeOptions: [10, 20, 50, 100],
   };
 
   return (
@@ -55,59 +77,68 @@ export default function ProductList() {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <RefreshButton resource="products" onClick={useR} />
+            <RefreshButton resource="products" onClick={() => refetch()} />
           </>
         )}
       >
-        <Table {...tableProps} rowKey="id" dataSource={filteredData}>
-          <Table.Column dataIndex="id" title={"ID"} />
-          <Table.Column dataIndex="name" title={"Name"} />
-          <Table.Column
-            dataIndex="photos"
-            title={"image"}
-            render={(_, record) => (
-              <>
-                <ImageField value={record.photos[0].url} width={150} />
-
-                <ImageField value={record.photos[1].url} width={150} />
-              </>
-            )}
-          />
-          <Table.Column dataIndex="originalPrice" title={"Original Price"} />
-
-          <Table.Column
-            dataIndex={"category"}
-            title={"Category"}
-            render={(value) => (value ? `${value.id} - ${value.name}` : "")}
-          />
-
-          <Table.Column
-            title={"Actions"}
-            dataIndex="actions"
-            render={(_, record: BaseRecord) => (
-              <Space>
-                {/* <EditButton hideText size="small" recordItemId={record.id} /> */}
-                <ShowButton
-                  hideText
-                  size="small"
-                  recordItemId={record.id}
-                  onClick={showProduct.bind(null, record as IProduct)}
-                />
-                {/* <DeleteButton hideText size="small" recordItemId={record.id} /> */}
-              </Space>
-            )}
-          />
-        </Table>
+        <Spin spinning={isLoading}>
+          <Table rowKey="id" dataSource={filteredData} pagination={pagination}>
+            <Table.Column dataIndex="id" title={"Mã"} />
+            <Table.Column dataIndex="name" title={"Tên sản phẩm"} />
+            <Table.Column
+              dataIndex="photos"
+              title={"Hình ảnh"}
+              render={(_, record) => (
+                <>
+                  {record.photos?.[0]?.url && (
+                    <ImageField value={record.photos[0].url} width={100} />
+                  )}
+                  {record.photos?.[1]?.url && (
+                    <ImageField value={record.photos[1].url} width={100} />
+                  )}
+                </>
+              )}
+            />
+            <Table.Column dataIndex="originalPrice" title={"Giá gốc"} />
+            <Table.Column
+              dataIndex="category"
+              title={"Danh mục"}
+              render={(value) => (value ? `${value.id} - ${value.name}` : "")}
+            />
+            <Table.Column
+              title={"Thao tác"}
+              dataIndex="actions"
+              render={(_, record: BaseRecord) => (
+                <Space>
+                  <ShowButton
+                    hideText
+                    size="small"
+                    recordItemId={record.id}
+                    onClick={() => setSelectedProductId(record.id as number)}
+                  />
+                  <DeleteButton
+                    hideText
+                    size="small"
+                    recordItemId={record.id}
+                    resource="products"
+                    onSuccess={() => refetch()}
+                  />
+                </Space>
+              )}
+            />
+          </Table>
+        </Spin>
       </List>
+
       {isClient && (
-        <>
-          <ProductShowModal
-            modalProps={modalProps}
-            data={productData}
-            onRefetch={useR}
-            // refetch={() => tableQuery.refetch()}
-          />{" "}
-        </>
+        <ProductShowModal
+          modalProps={{
+            open: !!selectedProductId,
+            onCancel: () => setSelectedProductId(undefined),
+          }}
+          productId={selectedProductId}
+          onRefetch={() => refetch()}
+        />
       )}
     </>
   );
