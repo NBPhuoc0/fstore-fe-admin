@@ -20,6 +20,7 @@ import { useApiUrl } from "@refinedev/core";
 import { useState, useEffect } from "react";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { AdjustStockModal } from "./import-stock";
+import { VariantStockModal } from "./variant-stock";
 
 interface ProductShowModalProps {
   modalProps: ModalProps;
@@ -37,8 +38,9 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [loadingToggle, setLoadingToggle] = useState(false);
-  const [AdjustVariantId, setAdjustVariantId] = useState<number | null>(null);
+  const [variantId, setVariantId] = useState<number | null>(null);
   const [editPriceModalOpen, setEditPriceModalOpen] = useState(false);
+  const [variantStockModalOpen, setVariantStockModalOpen] = useState(false);
   const [newPrice, setNewPrice] = useState<number>(0);
 
   // Fetch product data by productId
@@ -114,7 +116,7 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
   };
 
   return (
-    <Modal {...modalProps} title="Product Details" width={900} footer={null}>
+    <Modal {...modalProps} title="Chi tiết sản phẩm" width={900} footer={null}>
       <Spin spinning={loading}>
         {data ? (
           <>
@@ -147,23 +149,22 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
                 </Button>
               </Space>
             </div>
-
             <Descriptions bordered size="small" column={2}>
               <Descriptions.Item label="ID">{data.id}</Descriptions.Item>
               <Descriptions.Item label="Code">{data.code}</Descriptions.Item>
-              <Descriptions.Item label="Name" span={2}>
+              <Descriptions.Item label="Tên sản phẩm" span={2}>
                 {data.name}
               </Descriptions.Item>
-              <Descriptions.Item label="Category">
+              <Descriptions.Item label="Danh mục">
                 {data.category?.name}
               </Descriptions.Item>
-              <Descriptions.Item label="Brand">
+              <Descriptions.Item label="Thương hiệu">
                 {data.brand?.name}
               </Descriptions.Item>
-              <Descriptions.Item label="Original Price">
+              <Descriptions.Item label="Giá gốc">
                 {Number(data.originalPrice).toLocaleString("vi-VN")} ₫
               </Descriptions.Item>
-              <Descriptions.Item label="Sale Price">
+              <Descriptions.Item label="Giá khuyến mãi">
                 {data.salePrice
                   ? `${Number(data.salePrice).toLocaleString("vi-VN")} ₫`
                   : "N/A"}
@@ -171,27 +172,24 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
               <Descriptions.Item label="View Count">
                 {data.viewCount}
               </Descriptions.Item>
-              <Descriptions.Item label="Sale Count">
+              <Descriptions.Item label="Lượt bán">
                 {data.saleCount}
               </Descriptions.Item>
-              <Descriptions.Item label="Created At">
+              <Descriptions.Item label="Ngày tạo">
                 {new Date(data.createdDate).toLocaleString()}
               </Descriptions.Item>
-              <Descriptions.Item label="Updated At">
+              <Descriptions.Item label="Ngày cập nhật">
                 {new Date(data.updatedDate).toLocaleString()}
               </Descriptions.Item>
             </Descriptions>
-
-            <Divider orientation="left">Description</Divider>
+            <Divider orientation="left">Mô tả</Divider>
             <Typography.Paragraph>{data.metaDesc}</Typography.Paragraph>
-
-            <Divider orientation="left">Photos</Divider>
+            <Divider orientation="left">Hình ảnh</Divider>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {data.photos.map((photo: any) => (
                 <Image key={photo.id} src={photo.url} width={150} />
               ))}
             </div>
-
             <Divider orientation="left">Variants</Divider>
             <Table
               dataSource={data.variants}
@@ -210,7 +208,7 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
                 }}
               />
               <Table.Column
-                title="Color"
+                title="màu"
                 dataIndex="colorId"
                 render={(colorId) => {
                   const color = data.colors.find((c: any) => c.id === colorId);
@@ -218,39 +216,37 @@ export const ProductShowModal: React.FC<ProductShowModalProps> = ({
                 }}
               />
               <Table.Column
-                title="In Stock"
+                title="Tồn kho"
                 dataIndex={["stockQuantity"]}
                 render={(qty) =>
                   qty > 0 ? (
-                    <Tag color="green">In Stock</Tag>
+                    <Tag color="green">Còn hàng</Tag>
                   ) : (
-                    <Tag color="red">Out</Tag>
+                    <Tag color="red">Hết hàng</Tag>
                   )
                 }
               />
               <Table.Column
-                title="Stock Quantity"
+                title="Tổng tồn kho"
                 dataIndex={["stockQuantity"]}
               />
               <Table.Column
-                title="Actions"
+                title="lô hàng"
                 render={(_, record) => (
                   <Button
                     size="small"
                     type="primary"
-                    onClick={() => setAdjustVariantId(record.id)}
+                    onClick={() => setVariantId(record.id)}
                   >
-                    Adjust
+                    Xem chi tiết
                   </Button>
                 )}
               />
             </Table>
-
-            <AdjustStockModal
-              open={!!AdjustVariantId}
-              variantId={AdjustVariantId!}
-              onClose={() => setAdjustVariantId(null)}
-              onSuccess={onRefetch}
+            <VariantStockModal
+              open={!!variantId}
+              variantId={variantId!}
+              onClose={() => setVariantId(null)}
             />
           </>
         ) : (

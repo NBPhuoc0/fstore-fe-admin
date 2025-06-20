@@ -15,6 +15,8 @@ interface TransactionItem {
   variantId: number;
   productId: number;
   quantity: number;
+  orderId?: number;
+  importBatchId?: number;
   transactionType: InventoryTransactionType;
   price?: number;
   note?: string;
@@ -30,6 +32,12 @@ export default function TransactionTab({ data }: TransactionTabProps) {
   const [filterProductId, setFilterProductId] = useState<number | undefined>(
     undefined
   );
+  const [filterOrderId, setFilterOrderId] = useState<number | undefined>(
+    undefined
+  );
+  const [filterImportBatchId, setFilterImportBatchId] = useState<
+    number | undefined
+  >(undefined);
 
   const filteredData = useMemo(() => {
     let result = [...data];
@@ -39,14 +47,23 @@ export default function TransactionTab({ data }: TransactionTabProps) {
     if (filterProductId) {
       result = result.filter((item) => item.productId === filterProductId);
     }
+    if (filterOrderId) {
+      result = result.filter((item) => item.orderId === filterOrderId);
+    }
+    if (filterImportBatchId) {
+      result = result.filter(
+        (item) => item.importBatchId === filterImportBatchId
+      );
+    }
     return result;
-  }, [data, filterType, filterProductId]);
+  }, [data, filterType, filterProductId, filterOrderId, filterImportBatchId]);
 
   return (
     <Card>
       <Space style={{ marginBottom: 16 }}>
         <Select
-          placeholder="Filter by Type"
+          placeholder="
+           loại giao dịch"
           allowClear
           style={{ width: 180 }}
           value={filterType}
@@ -59,11 +76,25 @@ export default function TransactionTab({ data }: TransactionTabProps) {
         </Select>
 
         <InputNumber
-          placeholder="Filter by Product ID"
+          placeholder="Mã sản phẩm ID"
           min={1}
           style={{ width: 200 }}
           value={filterProductId}
           onChange={(value) => setFilterProductId(value ?? undefined)}
+        />
+        <InputNumber
+          placeholder="Mã đơn hàng ID"
+          min={1}
+          style={{ width: 200 }}
+          value={filterOrderId}
+          onChange={(value) => setFilterOrderId(value ?? undefined)}
+        />
+        <InputNumber
+          placeholder="Lô hàng ID"
+          min={1}
+          style={{ width: 200 }}
+          value={filterImportBatchId}
+          onChange={(value) => setFilterImportBatchId(value ?? undefined)}
         />
       </Space>
 
@@ -73,10 +104,10 @@ export default function TransactionTab({ data }: TransactionTabProps) {
         bordered
         pagination={{ pageSize: 10 }}
       >
-        <Table.Column title="Product" dataIndex="productId" />
-        <Table.Column title="Variant" dataIndex="variantId" />
+        <Table.Column title="Mã sản phẩm" dataIndex="productId" />
+        <Table.Column title="Mã biến thể" dataIndex="variantId" />
         <Table.Column
-          title="Type"
+          title="Loại giao dịch"
           dataIndex="transactionType"
           align="center"
           render={(value: string) => {
@@ -88,18 +119,18 @@ export default function TransactionTab({ data }: TransactionTabProps) {
             return <Tag color={color}>{value}</Tag>;
           }}
         />
-        <Table.Column title="Quantity" dataIndex="quantity" align="center" />
+        <Table.Column title="Số lượng" dataIndex="quantity" align="center" />
         <Table.Column
-          title="Price"
+          title="Giá"
           dataIndex="price"
           align="right"
           render={(value?: number) =>
             value ? `${value.toLocaleString("vi-VN")} ₫` : "-"
           }
         />
-        <Table.Column title="Note" dataIndex="note" />
+        <Table.Column title="Ghi chú" dataIndex="note" />
         <Table.Column
-          title="Created At"
+          title="Ngày tạo"
           dataIndex="createdAt"
           render={(value: string) => new Date(value).toLocaleString()}
         />

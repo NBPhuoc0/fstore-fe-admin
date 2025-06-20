@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { Card, Table } from "antd";
+import { Card, Table, Button } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+import { ShowButton } from "@refinedev/antd";
 
 interface ImportBatchItem {
   id: number;
@@ -15,9 +17,13 @@ interface ImportBatchItem {
 
 interface ImportBatchTabProps {
   data: ImportBatchItem[];
+  onClickBatch?: (id: number) => void; // callback khi click xem
 }
 
-export default function ImportBatchTab({ data }: ImportBatchTabProps) {
+export default function ImportBatchTab({
+  data,
+  onClickBatch,
+}: ImportBatchTabProps) {
   return (
     <Card>
       <Table
@@ -28,37 +34,50 @@ export default function ImportBatchTab({ data }: ImportBatchTabProps) {
       >
         <Table.Column title="Batch ID" dataIndex="id" />
         <Table.Column
-          title="Supplier Name"
+          title="Nhà cung cấp"
           dataIndex="supplierName"
           render={(val) => val ?? "-"}
         />
         <Table.Column
           width={400}
-          title="Note"
+          title="Ghi chú"
           dataIndex="note"
           render={(val) => val ?? "-"}
         />
         <Table.Column
-          title="Total Cost"
+          title="Tổng chi phí"
           dataIndex="totalCost"
           align="right"
           render={(val) => (val ? `${val.toLocaleString("vi-VN")} ₫` : "-")}
         />
         <Table.Column
-          title="Incidental Costs"
+          title="Chi phí phát sinh"
           dataIndex="incidentalCosts"
           align="right"
           render={(val) => (val ? `${val.toLocaleString("vi-VN")} ₫` : "-")}
         />
         <Table.Column
-          title="Created By"
+          title="Người tạo"
           dataIndex="createdBy"
           render={(val) => val ?? "-"}
         />
         <Table.Column
-          title="Created At"
+          title="Ngày tạo"
           dataIndex="createdAt"
           render={(val: string) => new Date(val).toLocaleString()}
+        />
+        <Table.Column
+          title="Thao tác"
+          key="actions"
+          render={(_, record) => (
+            <ShowButton
+              hideText
+              size="small"
+              icon={<EyeOutlined />}
+              recordItemId={record.id}
+              onClick={() => onClickBatch?.(record.id)}
+            />
+          )}
         />
       </Table>
     </Card>

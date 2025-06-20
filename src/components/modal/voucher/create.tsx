@@ -53,9 +53,10 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
       formData.append("value", values.value?.toString() || "");
       formData.append("quantity", values.quantity?.toString() || "");
       if (values.type === "PERCENT") {
-        formData.append("maxDiscount", values.maxDiscount?.toString() || "");
+        formData.append("maxDiscount", values.maxDiscount?.toString() || null);
       }
       formData.append("createdBy", values.createdBy || "");
+      formData.append("fromValue", values.fromValue?.toString() || null);
 
       setSubmitLoading(true);
 
@@ -66,7 +67,7 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
 
       message.success("Tạo voucher thành công");
       modalProps.onCancel;
-      formProps.form?.resetFields();
+      formProps.form?.resetFields;
     } catch (err) {
       console.error(err);
       message.error("Tạo voucher thất bại");
@@ -83,28 +84,28 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
     >
       <Spin spinning={loading}>
         <Form {...formProps} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
+          <Form.Item label="Tên" name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item
-            label="Description"
+            label="Mô tả"
             name="description"
             rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Type"
+            label="Loại khuyến mãi"
             name="type"
             rules={[{ required: true }]}
             initialValue="PERCENT"
           >
             <Select
               options={[
-                { label: "Percent", value: "PERCENT" },
-                { label: "Amount", value: "AMOUNT" },
+                { label: "Phần trăm", value: "PERCENT" },
+                { label: "Số tiền", value: "AMOUNT" },
               ]}
-              placeholder="Select voucher type"
+              placeholder="Chọn loại voucher"
             />
           </Form.Item>
           {/* Logic Max Discount */}
@@ -113,7 +114,7 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
               const type = formProps.form?.getFieldValue("type");
               return (
                 <Form.Item
-                  label="Max Discount"
+                  label="Giảm giá tối đa"
                   name="maxDiscount"
                   rules={
                     type === "PERCENT"
@@ -121,7 +122,7 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
                           {
                             required: true,
                             message:
-                              "Bắt buộc nhập Max Discount với loại Percent",
+                              "Bắt buộc nhập Max Discount với loại phần trăm",
                           },
                         ]
                       : []
@@ -133,7 +134,14 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
             }}
           </Form.Item>
           <Form.Item
-            label="Value"
+            label="Đơn tối thiểu"
+            name="fromValue"
+            rules={[{ required: true }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            label="Giảm giá"
             name="value"
             rules={[{ required: true }]}
             initialValue={12000}
@@ -141,7 +149,7 @@ export const VoucherCreateModal: React.FC<CreateVoucherModalProps> = ({
             <Input type="number" />
           </Form.Item>
           <Form.Item
-            label="Quantity"
+            label="Số lượng"
             name="quantity"
             rules={[{ required: true }]}
             initialValue={10}

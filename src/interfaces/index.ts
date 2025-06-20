@@ -89,7 +89,7 @@ export interface IOrder {
   email: string;
   phone: string;
   total: number;
-  status: "PENDING" | "COMPLETED" | "CANCELED";
+  status: OrderStatus;
   createdDate: Date;
   updatedDate: Date;
   // products?: IProduct[] | number[];
@@ -127,7 +127,6 @@ export enum TicketType {
 
 export enum TicketStatus {
   PENDING = "PENDING",
-  IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
   REJECTED = "REJECTED",
 }

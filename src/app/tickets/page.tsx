@@ -10,14 +10,19 @@ import {
   DeleteButton,
 } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
-import { Table, Space, Tag } from "antd";
+import { Table, Space, Tag, Select } from "antd";
 import { useEffect, useState, useMemo } from "react";
 
 export default function TicketList() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<ITicket | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<
+    TicketStatus | undefined
+  >(undefined);
+
   useEffect(() => setIsClient(true), []);
+
   const { tableProps, tableQuery } = useTable<ITicket>({
     syncWithLocation: true,
   });
@@ -31,10 +36,22 @@ export default function TicketList() {
 
   const statusColorMap: Record<TicketStatus, string> = {
     PENDING: "red",
-    IN_PROGRESS: "orange",
     COMPLETED: "green",
     REJECTED: "gray",
   };
+
+  const statusOptions = [
+    { value: "PENDING", label: "Chờ xử lý" },
+    { value: "COMPLETED", label: "Hoàn thành" },
+    { value: "REJECTED", label: "Từ chối" },
+  ];
+
+  const filteredData = useMemo(() => {
+    if (!selectedStatus) return tableProps.dataSource || [];
+    return (tableProps.dataSource || []).filter(
+      (item) => item.status === selectedStatus
+    );
+  }, [tableProps.dataSource, selectedStatus]);
 
   return (
     <>
@@ -42,6 +59,14 @@ export default function TicketList() {
         headerButtons={({ defaultButtons }) => (
           <>
             {defaultButtons}
+            <Select
+              allowClear
+              placeholder="Lọc theo trạng thái"
+              style={{ width: 200 }}
+              value={selectedStatus}
+              onChange={(val) => setSelectedStatus(val)}
+              options={statusOptions}
+            />
             <RefreshButton
               resource="tickets"
               onClick={() => tableQuery.refetch()}
@@ -49,7 +74,7 @@ export default function TicketList() {
           </>
         )}
       >
-        <Table {...tableProps} rowKey="id">
+        <Table {...tableProps} rowKey="id" dataSource={filteredData}>
           <Table.Column dataIndex="id" title="Mã" />
           <Table.Column dataIndex="email" title="Email" />
           <Table.Column
@@ -79,8 +104,6 @@ export default function TicketList() {
               <Tag color={statusColorMap[val]}>
                 {val === "PENDING"
                   ? "Chờ xử lý"
-                  : val === "IN_PROGRESS"
-                  ? "Đang xử lý"
                   : val === "COMPLETED"
                   ? "Hoàn thành"
                   : val === "REJECTED"

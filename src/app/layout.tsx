@@ -24,6 +24,7 @@ import { authProviderClient } from "@providers/auth-provider/auth-provider.clien
 import { dataProviderRes } from "@providers/data-provider";
 import routerProvider from "@refinedev/nextjs-router";
 import { OrderNotificationClient } from "@components/notification/order-noti";
+import { TicketNotificationClient } from "@components/notification/ticket-noti";
 
 export const metadata: Metadata = {
   title: "Fstore",
@@ -45,8 +46,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <OrderNotificationClient />
-
         <Suspense>
           {/* <RefineContext defaultMode={defaultMode}>{children}</RefineContext> */}
           <RefineKbarProvider>
@@ -157,6 +156,8 @@ export default function RootLayout({
                     title: { text: "Fstore Admin", icon: <AppIcon /> },
                   }}
                 >
+                  <OrderNotificationClient />
+                  <TicketNotificationClient />
                   {children}
                   <RefineKbar />
                 </Refine>

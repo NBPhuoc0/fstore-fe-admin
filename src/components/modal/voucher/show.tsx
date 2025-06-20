@@ -74,19 +74,19 @@ export const VoucherShowModal: React.FC<VoucherShowModalProps> = ({
   if (!voucherId) return null;
 
   return (
-    <Modal {...modalProps} title="Voucher Details" width={700} footer={null}>
+    <Modal {...modalProps} title="Thông tin voucher" width={700} footer={null}>
       <Spin spinning={loading}>
         {data ? (
           <>
             <Descriptions bordered size="small" column={2}>
               <Descriptions.Item label="ID">{data.id}</Descriptions.Item>
-              <Descriptions.Item label="Name">{data.name}</Descriptions.Item>
-              <Descriptions.Item label="Type">
+              <Descriptions.Item label="Tên">{data.name}</Descriptions.Item>
+              <Descriptions.Item label="Loại">
                 <Tag color={data.type === "PERCENT" ? "blue" : "orange"}>
                   {data.type}
                 </Tag>
               </Descriptions.Item>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label="Trạng thái">
                 {data.status ? (
                   <Tag color="green">Active</Tag>
                 ) : (
@@ -102,35 +102,40 @@ export const VoucherShowModal: React.FC<VoucherShowModalProps> = ({
                   {data.status ? "Tắt" : "Bật"}
                 </Button>
               </Descriptions.Item>
-              <Descriptions.Item label="Value">
+              <Descriptions.Item label="Giá trị">
                 {data.type === "PERCENT"
                   ? `${data.value}%`
                   : `${data.value?.toLocaleString("vi-VN")} ₫`}
               </Descriptions.Item>
-              <Descriptions.Item label="Max Discount">
+              <Descriptions.Item label="Đơn tối thiểu">
+                {data.fromValue
+                  ? `${data.fromValue?.toLocaleString("vi-VN")} ₫`
+                  : "N/A"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Giảm giá tối đa">
                 {data.maxDiscount
                   ? `${data.maxDiscount?.toLocaleString("vi-VN")} ₫`
                   : "N/A"}
               </Descriptions.Item>
-              <Descriptions.Item label="Quantity">
+              <Descriptions.Item label="Số lượng">
                 {data.quantity}
               </Descriptions.Item>
-              <Descriptions.Item label="Used Quantity">
+              <Descriptions.Item label="Số lượng đã sử dụng">
                 {data.usedQuantity}
               </Descriptions.Item>
-              <Descriptions.Item label="Budget Used">
+              <Descriptions.Item label="Ngân sách đã sử dụng">
                 {data.budgetUsed?.toLocaleString("vi-VN")} ₫
               </Descriptions.Item>
-              <Descriptions.Item label="Created At">
+              <Descriptions.Item label="Ngày tạo">
                 {new Date(data.createdAt).toLocaleString()}
               </Descriptions.Item>
-              <Descriptions.Item label="Updated At">
+              <Descriptions.Item label="Ngày cập nhật">
                 {new Date(data.updatedAt).toLocaleString()}
               </Descriptions.Item>
             </Descriptions>
 
             <Typography.Title level={5} style={{ marginTop: 24 }}>
-              Usage Progress
+              Tiến độ sử dụng
             </Typography.Title>
 
             <Progress
@@ -144,7 +149,7 @@ export const VoucherShowModal: React.FC<VoucherShowModalProps> = ({
             />
 
             <Typography.Title level={5} style={{ marginTop: 24 }}>
-              Description
+              Mô tả
             </Typography.Title>
             <Typography.Paragraph>{data.description}</Typography.Paragraph>
           </>

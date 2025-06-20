@@ -3,11 +3,12 @@
 
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { formatVND } from "@components/helper";
+import { useApiUrl } from "@refinedev/core";
 import { notification } from "antd";
 import { useEffect } from "react";
 
 export const OrderNotificationClient = () => {
-  const apiUrl = "https://api.nbphuoc.xyz/admin"; // Thay thế bằng URL API thực tế
+  const apiUrl = useApiUrl("default"); // Thay thế bằng URL API thực tế
 
   useEffect(() => {
     const sse = new EventSource(`${apiUrl}/orders/stream`);
