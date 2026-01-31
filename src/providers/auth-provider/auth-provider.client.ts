@@ -1,8 +1,8 @@
 "use client";
 
+import { AuthProvider } from "@refinedev/core";
 import { axiosInstance } from "@refinedev/nestjsx-crud";
 import Cookies from "js-cookie";
-import { AuthProvider, HttpError } from "@refinedev/core";
 
 export const authProviderClient: AuthProvider = {
   login: async ({ email, password }) => {
@@ -68,20 +68,24 @@ export const authProviderClient: AuthProvider = {
   check: async () => {
     const auth = JSON.parse(Cookies.get("user") || "null");
 
-    if (auth?.isAdmin) {
-      return {
-        authenticated: true,
-      };
-    }
+    // if (auth?.isAdmin) {
+    //   return {
+    //     authenticated: true,
+    //   };
+    // }
+
+    // return {
+    //   authenticated: false,
+    //   logout: true,
+    //   redirectTo: "/login",
+    //   error: {
+    //     name: "Không có quyền truy cập",
+    //     message: "Bạn không có quyền truy cập trang này",
+    //   },
+    // };
 
     return {
-      authenticated: false,
-      logout: true,
-      redirectTo: "/login",
-      error: {
-        name: "Không có quyền truy cập",
-        message: "Bạn không có quyền truy cập trang này",
-      },
+      authenticated: true,
     };
   },
   onError: async (error) => {

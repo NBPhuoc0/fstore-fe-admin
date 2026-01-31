@@ -8,22 +8,25 @@ export const authProviderServer: Pick<AuthProvider, "check"> = {
 
     // Check if the user cookie exists
     // and if it contains the isAdmin property set to true
-    if (auth && auth.value) {
-      if (JSON.parse(auth.value).isAdmin) {
-        return {
-          authenticated: true,
-        };
-      }
-    }
+    // if (auth && auth.value) {
+    //   if (JSON.parse(auth.value).isAdmin) {
+    //     return {
+    //       authenticated: true,
+    //     };
+    //   }
+    // }
 
+    // return {
+    //   authenticated: false,
+    //   logout: true,
+    //   redirectTo: "/login",
+    //   error: {
+    //     name: "Không có quyền truy cập",
+    //     message: "Bạn không có quyền truy cập trang này",
+    //   },
+    // };
     return {
-      authenticated: false,
-      logout: true,
-      redirectTo: "/login",
-      error: {
-        name: "Không có quyền truy cập",
-        message: "Bạn không có quyền truy cập trang này",
-      },
+      authenticated: true,
     };
   },
 };
